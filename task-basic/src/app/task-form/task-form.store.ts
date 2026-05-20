@@ -1,8 +1,7 @@
-import { linkedSignal } from '@angular/core';
+import { inject, linkedSignal } from '@angular/core';
 import {
   patchState,
   signalStore,
-  signalStoreFeature,
   watchState,
   withComputed,
   withHooks,
@@ -10,10 +9,9 @@ import {
   withProps,
   withState
 } from '@ngrx/signals';
-import { Store } from '@ngrx/store';
-import { Injectable, inject } from '@angular/core';
-import { addTask, updateTask } from '../store/task.actions';
+import { connectSignalDevtools } from '../store/signal-devtools';
 import { Task } from '../store/task.model';
+import { TaskStore } from '../store/task.store';
 
 interface TaskFormState {
   selectedTask: Task | null;
@@ -24,16 +22,6 @@ interface TaskFormState {
 interface TaskFormData {
   title: string;
   completed: boolean;
-}
-
-function withLogging() {
-  return signalStoreFeature(
-    withHooks({
-      onInit(store) {
-        watchState(store, (state) => console.log('[TaskFormStore] state change', state));
-      }
-    })
-  );
 }
 
 const initialTaskFormState: TaskFormState = {
@@ -47,11 +35,11 @@ const emptyFormData: TaskFormData = {
   completed: false
 };
 
-const TaskFormStoreBase = signalStore(
-  { providedIn: 'root' },
+export const TaskFormStore = signalStore(
   withState(initialTaskFormState),
   withProps(() => ({
-    _originalTaskData: linkedSignal(() => null as TaskFormData | null)
+    _originalTaskData: linkedSignal(() => null as TaskFormData | null),
+    _devtools: connectSignalDevtools('TaskFormStore')
   })),
   withComputed(({ selectedTask }) => ({
     formData: linkedSignal(() => ({
@@ -59,8 +47,7 @@ const TaskFormStoreBase = signalStore(
       completed: selectedTask()?.completed ?? false
     }))
   })),
-  withLogging(),
-  withMethods((store, rootStore = inject(Store)) => ({
+  withMethods((store, taskStore = inject(TaskStore)) => ({
     loadTaskForEdit(task: Task): void {
       const original: TaskFormData = {
         title: task.title,
@@ -75,7 +62,7 @@ const TaskFormStoreBase = signalStore(
       });
       store.formData.set({ ...original });
     },
-    updateField(field: string, value: any): void {
+    updateField(field: string, value: string | boolean): void {
       store.formData.update((current) => ({ ...current, [field]: value }));
       const current = store.formData();
       const original = store._originalTaskData();
@@ -86,7 +73,7 @@ const TaskFormStoreBase = signalStore(
 
       patchState(store, { isDirty });
     },
-    saveForm(): void {
+    async saveForm(): Promise<void> {
       const data = store.formData();
       const title = data.title.trim();
       if (!title) {
@@ -94,15 +81,9 @@ const TaskFormStoreBase = signalStore(
       }
 
       if (store.isEditing() && store.selectedTask()) {
-        rootStore.dispatch(
-          updateTask({
-            id: store.selectedTask()!.id,
-            title,
-            completed: data.completed
-          })
-        );
+        await taskStore.updateTask(store.selectedTask()!.id, title, data.completed);
       } else {
-        rootStore.dispatch(addTask({ title }));
+        await taskStore.addTask(title);
       }
 
       patchState(store, { isDirty: false });
@@ -122,11 +103,16 @@ const TaskFormStoreBase = signalStore(
     }
   })),
   withHooks({
-    onInit: () => console.log('Store initialized')
+    onInit(store) {
+      store._devtools?.init({
+        selectedTask: store.selectedTask(),
+        isEditing: store.isEditing(),
+        isDirty: store.isDirty(),
+        formData: store.formData()
+      });
+      watchState(store, (state) => {
+        store._devtools?.send('TaskFormStore state update', state);
+      });
+    }
   })
 );
-
-@Injectable({ providedIn: 'root' })
-export class TaskFormStore extends TaskFormStoreBase {
-  #originalTaskData: Task | null = null;
-}

@@ -1,11 +1,12 @@
 <section class="form-wrap">
-  <h1>{{ isEditing() ? 'Edit Task' : 'New Task' }}</h1>
+  <h1>{{ isEditing() ? 'Edit Task' : 'Create Task' }}</h1>
 
   <form (ngSubmit)="submitForm()">
-    <label for="title">Title</label>
+    <label for="title">Task Title</label>
     <input
       id="title"
       name="title"
+      placeholder="e.g. Prepare sprint board"
       [ngModel]="formData().title"
       (ngModelChange)="onFieldChange('title', $event)"
       required
@@ -18,15 +19,15 @@
         [ngModel]="formData().completed"
         (ngModelChange)="onFieldChange('completed', $event)"
       />
-      Completed
+      Mark as completed
     </label>
 
     @if (isDirty()) {
-      <p class="dirty-warning">Unsaved Changes</p>
+      <p class="dirty-warning">You have unsaved changes.</p>
     }
 
     <div class="actions">
-      <button type="submit">Save</button>
+      <button class="primary" type="submit">Save</button>
       <a routerLink="/tasks">Cancel</a>
     </div>
   </form>

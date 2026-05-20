@@ -1,34 +1,46 @@
 <section class="task-wrap">
-  <h1>Simple Task Counter</h1>
-
-  <button type="button" (click)="addTask()" [disabled]="loading()">Add Task</button>
+  <div class="header-row">
+    <h1>Task Dashboard</h1>
+    <button class="primary" type="button" (click)="addTask()" [disabled]="loading()">Add Task</button>
+  </div>
 
   @if (loading()) {
-    <p>Loading...</p>
+    <p class="info">Loading tasks...</p>
   }
 
   @if (error()) {
     <p class="error">Error: {{ error() }}</p>
   }
 
-  <p class="stats">
-    Total: {{ stats().total }} |
-    Pending: {{ stats().pending }} |
-    Completed: {{ stats().completed }}
-  </p>
+  <div class="stats-grid">
+    <article>
+      <h3>Total</h3>
+      <p>{{ stats().total }}</p>
+    </article>
+    <article>
+      <h3>Pending</h3>
+      <p>{{ stats().pending }}</p>
+    </article>
+    <article>
+      <h3>Completed</h3>
+      <p>{{ stats().completed }}</p>
+    </article>
+  </div>
 
   @if (tasks().length === 0) {
-    <p>No tasks yet. Add your first task.</p>
+    <p class="empty">No tasks yet. Add your first task.</p>
   } @else {
-    <ul>
+    <ul class="task-list">
       @for (task of tasks(); track task.id) {
-        <li>
+        <li class="task-item">
           <span [class.completed]="task.completed">{{ task.title }}</span>
-          <button type="button" (click)="toggleTask(task.id)" [disabled]="loading()">
-            {{ task.completed ? 'Mark Pending' : 'Mark Completed' }}
-          </button>
-          <button type="button" (click)="editTask(task.id)" [disabled]="loading()">Edit</button>
-          <button type="button" (click)="deleteTask(task.id)" [disabled]="loading()">Delete</button>
+          <div class="actions">
+            <button type="button" (click)="toggleTask(task.id)" [disabled]="loading()">
+              {{ task.completed ? 'Mark Pending' : 'Mark Completed' }}
+            </button>
+            <button type="button" (click)="editTask(task.id)" [disabled]="loading()">Edit</button>
+            <button class="danger" type="button" (click)="deleteTask(task.id)" [disabled]="loading()">Delete</button>
+          </div>
         </li>
       }
     </ul>

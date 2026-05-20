@@ -1,13 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { deleteTask, loadTasks, toggleTask } from '../store/task.actions';
-import {
-  selectAllTasks,
-  selectTaskError,
-  selectTaskLoading,
-  selectTaskStats
-} from '../store/task.selectors';
+import { TaskStore } from '../store/task.store';
 
 @Component({
   selector: 'app-task-list',
@@ -17,16 +10,16 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TaskListComponent implements OnInit {
-  private readonly store = inject(Store);
+  private readonly taskStore = inject(TaskStore);
   private readonly router = inject(Router);
 
-  readonly tasks = this.store.selectSignal(selectAllTasks);
-  readonly stats = this.store.selectSignal(selectTaskStats);
-  readonly loading = this.store.selectSignal(selectTaskLoading);
-  readonly error = this.store.selectSignal(selectTaskError);
+  readonly tasks = this.taskStore.tasks;
+  readonly stats = this.taskStore.stats;
+  readonly loading = this.taskStore.loading;
+  readonly error = this.taskStore.error;
 
   ngOnInit(): void {
-    this.store.dispatch(loadTasks());
+    void this.taskStore.loadTasks();
   }
 
   addTask(): void {
@@ -38,7 +31,7 @@ export class TaskListComponent implements OnInit {
       return;
     }
 
-    this.store.dispatch(toggleTask({ id }));
+    void this.taskStore.toggleTask(id);
   }
 
   deleteTask(id: number): void {
@@ -46,7 +39,7 @@ export class TaskListComponent implements OnInit {
       return;
     }
 
-    this.store.dispatch(deleteTask({ id }));
+    void this.taskStore.deleteTask(id);
   }
 
   editTask(id: number): void {

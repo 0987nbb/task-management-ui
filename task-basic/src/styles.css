@@ -1,1 +1,35 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg: #f4f7fb;
+  --bg-accent: #e9f1ff;
+  --surface: #ffffff;
+  --text: #1c2434;
+  --muted: #607089;
+  --primary: #1f6feb;
+  --primary-hover: #1857b8;
+  --danger: #d64545;
+  --border: #d9e1ee;
+  --shadow: 0 14px 40px rgba(12, 34, 66, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 10% 10%, #ffffff 0%, transparent 38%),
+    radial-gradient(circle at 90% 15%, #dce9ff 0%, transparent 32%),
+    linear-gradient(145deg, var(--bg), var(--bg-accent));
+}
+
+button,
+input,
+a {
+  font-family: inherit;
+}
