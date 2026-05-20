@@ -37,6 +37,22 @@ export class MockApiService {
     return of({ ...updatedTask }).pipe(delay(500));
   }
 
+  updateTask(id: number, title: string, completed: boolean): Observable<Task> {
+    const existingTask = this.tasks.find((task) => task.id === id);
+    if (!existingTask) {
+      return throwError(() => new Error('Task not found'));
+    }
+
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) {
+      return throwError(() => new Error('Task title is required'));
+    }
+
+    const updatedTask: Task = { ...existingTask, title: trimmedTitle, completed };
+    this.tasks = this.tasks.map((task) => (task.id === id ? updatedTask : task));
+    return of({ ...updatedTask }).pipe(delay(500));
+  }
+
   deleteTask(id: number): Observable<void> {
     const exists = this.tasks.some((task) => task.id === id);
     if (!exists) {

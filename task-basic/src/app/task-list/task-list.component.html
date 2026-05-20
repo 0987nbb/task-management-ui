@@ -27,6 +27,7 @@
           <button type="button" (click)="toggleTask(task.id)" [disabled]="loading()">
             {{ task.completed ? 'Mark Pending' : 'Mark Completed' }}
           </button>
+          <button type="button" (click)="editTask(task.id)" [disabled]="loading()">Edit</button>
           <button type="button" (click)="deleteTask(task.id)" [disabled]="loading()">Delete</button>
         </li>
       }

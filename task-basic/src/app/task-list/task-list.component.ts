@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { addTask, deleteTask, loadTasks, toggleTask } from '../store/task.actions';
+import { deleteTask, loadTasks, toggleTask } from '../store/task.actions';
 import {
   selectAllTasks,
   selectTaskError,
@@ -17,6 +18,7 @@ import {
 })
 export class TaskListComponent implements OnInit {
   private readonly store = inject(Store);
+  private readonly router = inject(Router);
 
   readonly tasks = this.store.selectSignal(selectAllTasks);
   readonly stats = this.store.selectSignal(selectTaskStats);
@@ -28,14 +30,7 @@ export class TaskListComponent implements OnInit {
   }
 
   addTask(): void {
-    if (this.loading()) {
-      return;
-    }
-
-    const title = prompt('Enter task title');
-    if (title) {
-      this.store.dispatch(addTask({ title }));
-    }
+    this.router.navigateByUrl('/tasks/new');
   }
 
   toggleTask(id: number): void {
@@ -52,5 +47,9 @@ export class TaskListComponent implements OnInit {
     }
 
     this.store.dispatch(deleteTask({ id }));
+  }
+
+  editTask(id: number): void {
+    this.router.navigateByUrl(`/tasks/${id}/edit`);
   }
 }

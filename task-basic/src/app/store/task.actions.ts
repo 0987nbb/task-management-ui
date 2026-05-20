@@ -33,6 +33,11 @@ export const toggleTask = createAction(
   props<{ id: number }>()
 );
 
+export const updateTask = createAction(
+  '[Task] Update Task',
+  props<{ id: number; title: string; completed: boolean }>()
+);
+
 export const toggleTaskSuccess = createAction(
   '[Task] Toggle Task Success',
   props<{ task: Task }>()
@@ -55,5 +60,15 @@ export const deleteTaskSuccess = createAction(
 
 export const deleteTaskFailure = createAction(
   '[Task] Delete Task Failure',
+  props<{ error: string }>()
+);
+
+export const updateTaskSuccess = createAction(
+  '[Task] Update Task Success',
+  props<{ task: Task }>()
+);
+
+export const updateTaskFailure = createAction(
+  '[Task] Update Task Failure',
   props<{ error: string }>()
 );

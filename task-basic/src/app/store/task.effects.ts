@@ -56,6 +56,22 @@ export const toggleTask$ = createEffect(
   { functional: true }
 );
 
+export const updateTask$ = createEffect(
+  (actions$ = inject(Actions), api = inject(MockApiService)) =>
+    actions$.pipe(
+      ofType(TaskActions.updateTask),
+      mergeMap(({ id, title, completed }) =>
+        api.updateTask(id, title, completed).pipe(
+          map((task) => TaskActions.updateTaskSuccess({ task })),
+          catchError((error: unknown) =>
+            of(TaskActions.updateTaskFailure({ error: getErrorMessage(error) }))
+          )
+        )
+      )
+    ),
+  { functional: true }
+);
+
 export const deleteTask$ = createEffect(
   (actions$ = inject(Actions), api = inject(MockApiService)) =>
     actions$.pipe(

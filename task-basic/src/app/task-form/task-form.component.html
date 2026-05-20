@@ -1,0 +1,33 @@
+<section class="form-wrap">
+  <h1>{{ isEditing() ? 'Edit Task' : 'New Task' }}</h1>
+
+  <form (ngSubmit)="submitForm()">
+    <label for="title">Title</label>
+    <input
+      id="title"
+      name="title"
+      [ngModel]="formData().title"
+      (ngModelChange)="onFieldChange('title', $event)"
+      required
+    />
+
+    <label class="checkbox">
+      <input
+        type="checkbox"
+        name="completed"
+        [ngModel]="formData().completed"
+        (ngModelChange)="onFieldChange('completed', $event)"
+      />
+      Completed
+    </label>
+
+    @if (isDirty()) {
+      <p class="dirty-warning">Unsaved Changes</p>
+    }
+
+    <div class="actions">
+      <button type="submit">Save</button>
+      <a routerLink="/tasks">Cancel</a>
+    </div>
+  </form>
+</section>

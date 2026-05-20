@@ -24,6 +24,7 @@ export const taskReducer = createReducer(
     TaskActions.loadTasks,
     TaskActions.addTask,
     TaskActions.toggleTask,
+    TaskActions.updateTask,
     TaskActions.deleteTask,
     (state) => ({
       ...state,
@@ -64,6 +65,18 @@ export const taskReducer = createReducer(
     loading: false
   })),
   on(TaskActions.toggleTaskFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error
+  })),
+  on(TaskActions.updateTaskSuccess, (state, { task }) => ({
+    ...state,
+    tasks: state.tasks.map((existingTask) =>
+      existingTask.id === task.id ? task : existingTask
+    ),
+    loading: false
+  })),
+  on(TaskActions.updateTaskFailure, (state, { error }) => ({
     ...state,
     loading: false,
     error
