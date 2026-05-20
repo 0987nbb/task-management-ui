@@ -1,0 +1,35 @@
+<section class="task-wrap">
+  <h1>Simple Task Counter</h1>
+
+  <button type="button" (click)="addTask()" [disabled]="loading()">Add Task</button>
+
+  @if (loading()) {
+    <p>Loading...</p>
+  }
+
+  @if (error()) {
+    <p class="error">Error: {{ error() }}</p>
+  }
+
+  <p class="stats">
+    Total: {{ stats().total }} |
+    Pending: {{ stats().pending }} |
+    Completed: {{ stats().completed }}
+  </p>
+
+  @if (tasks().length === 0) {
+    <p>No tasks yet. Add your first task.</p>
+  } @else {
+    <ul>
+      @for (task of tasks(); track task.id) {
+        <li>
+          <span [class.completed]="task.completed">{{ task.title }}</span>
+          <button type="button" (click)="toggleTask(task.id)" [disabled]="loading()">
+            {{ task.completed ? 'Mark Pending' : 'Mark Completed' }}
+          </button>
+          <button type="button" (click)="deleteTask(task.id)" [disabled]="loading()">Delete</button>
+        </li>
+      }
+    </ul>
+  }
+</section>
